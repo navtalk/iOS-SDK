@@ -16,7 +16,7 @@
 Xcode --> File --> Add Package Dependencies... --> Serch: https://github.com/navtalk/iOS-SDK.git --> Add Package
 
 ## Usage
-![Chat Interface Screenshot](Sources/Assets/NavTalk_First_Shot.png)
+![Chat Interface Screenshot](Sources/Assets/NavTalk_First_Shot.PNG)
 
 1.Import the header file at the top of the file where the chat interface will be displayed:
 ```ruby
