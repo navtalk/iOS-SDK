@@ -8,8 +8,9 @@
 
 3.Add privacy permission requests in Target –> Info:
 
-  Key: Privacy - Microphone Usage Description  Value: We need access to your microphone to record audio.
-  Key: Privacy - Camera Usage Description      Value: The App needs get image.
+  3.1.Key: Privacy - Microphone Usage Description  Value: We need access to your microphone to record audio.
+
+  3.2.Key: Privacy - Camera Usage Description      Value: The App needs get image.
 
 ## Installation
 
