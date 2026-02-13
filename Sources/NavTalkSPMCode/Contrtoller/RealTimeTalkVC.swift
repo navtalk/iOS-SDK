@@ -247,6 +247,13 @@ class RealTimeTalkVC: UIViewController, UITableViewDelegate, UITableViewDataSour
             //Stop All Socket And WebRTC And Pause Record Audio
             isJudgeNotificationOfStatuse = false
             stopAllTask()
+        }else{
+            if WebRTCManager.shared.webRTC_status == .Connected{
+                WebRTCManager.shared.disconnectWebRTC()
+            }
+            if WebSocketManager.shared.socket_status == .Connected{
+                WebSocketManager.shared.disconnectWebSocketOfNavTalk()
+            }
         }
         dismiss(animated: true)
     }
@@ -519,3 +526,4 @@ class RealTimeTalkVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         CameraCaptureManager.shared.switchCameraPosition()
     }
 }
+
