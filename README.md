@@ -47,6 +47,7 @@ Then click **Add Package**.
 3.NavTalk Avatar Name (required)
 ```swift
   NavTalkManager.shared.characterName = "*******"
+  NavTalkManager.shared.characterId = "*******"
 ```
   - Note: name: The name of the digital human character (query method 1)
   - Note: avatarId: Direct avatar ID for precise lookup (query method 2, higher priority)

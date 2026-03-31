@@ -16,7 +16,7 @@ public class NavTalkManager: NSObject, @unchecked Sendable{
     public var license = ""
     //Your Avatar Name Here -- Requied
     //Option 1: Connect using character name
-    public var characterName = "Brain"
+    public var characterName = ""
     //Option 2: Connect using avatarId (recommended, higher priority)
     //Test: faab967a08e1731076b39edd9538636f
     public var characterId = ""
@@ -46,9 +46,9 @@ public class NavTalkManager: NSObject, @unchecked Sendable{
             }
             return
         }
-        if characterName.count <= 0{
+        if characterName.count <= 0 && characterId.count <= 0{
             DispatchQueue.main.async {
-                vc.view.makeToast("Please set the characterName parameter first; it is your avatar name.", duration: 3.0, position: ToastPosition.center, title: "")
+                vc.view.makeToast("Please set the characterName or characterId first; it is your avatar.", duration: 3.0, position: ToastPosition.center, title: "")
             }
             return
         }
