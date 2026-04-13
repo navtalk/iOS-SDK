@@ -23,6 +23,8 @@ public class NavTalkManager: NSObject, @unchecked Sendable{
     
     // Is or not save history chat message
     public var isOrNotSaveHistoryChatMessages = false
+    
+    public var navtalkBaseURL = "wss://transfer.navtalk.ai/wss/v2/realtime-chat"
 
     //Avatar Image URL
     var avatar_image_url = ""

@@ -22,7 +22,6 @@ class WebSocketManager: NSObject, WebSocketDelegate, @unchecked Sendable{
     //MARK: 2.Connect NavTalk WebSocket
     var socket_status: websocketStatus = .NotConnected
     var socket: Starscream.WebSocket!
-    let websocketUrl = "wss://transfer.navtalk.ai/wss/v2/realtime-chat"
 
     func connectWebSocketOfNavTalk(){
         if NavTalkManager.shared.avatar_provider_type.count <= 0{
@@ -44,7 +43,7 @@ class WebSocketManager: NSObject, WebSocketDelegate, @unchecked Sendable{
             let encodedCharacterId = NavTalkManager.shared.characterId.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
             //2.Connect Socket
             if (NavTalkManager.shared.characterId.count > 0){
-                guard let url = URL(string: "\(websocketUrl)?license=\(encodedLicense)&avatarId=\(encodedCharacterId)") else { return }
+                guard let url = URL(string: "\(NavTalkManager.shared.navtalkBaseURL)?license=\(encodedLicense)&avatarId=\(encodedCharacterId)") else { return }
                 let request = URLRequest(url: url)
                 socket = WebSocket(request: request)
                 socket.delegate = self
@@ -52,7 +51,7 @@ class WebSocketManager: NSObject, WebSocketDelegate, @unchecked Sendable{
                 socket_status = .Connectting
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: "WebSocketManager_socket_status_changed"), object: nil)
             }else{
-                guard let url = URL(string: "\(websocketUrl)?license=\(encodedLicense)&name=\(encodedCharacterName)") else { return }
+                guard let url = URL(string: "\(NavTalkManager.shared.navtalkBaseURL)?license=\(encodedLicense)&name=\(encodedCharacterName)") else { return }
                 let request = URLRequest(url: url)
                 socket = WebSocket(request: request)
                 socket.delegate = self

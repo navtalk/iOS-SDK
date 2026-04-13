@@ -34,7 +34,7 @@ Then click **Add Package**.
 ## Usage
 ![Chat Interface Screenshot](Sources/Assets/NavTalk_First_Shot.PNG)
 
-1.Import the SDK in the file where the chat interface will be displayed
+1.Import the SDK in the file where the chat interface will be displayed (required)
 ```swift
   import NavTalkSPM
 ```
@@ -44,7 +44,7 @@ Then click **Add Package**.
   NavTalkManager.shared.license = "*******"
 ```
 
-3.NavTalk Avatar Name (required)
+3.NavTalk Avatar Name Or Avatar Id (required)
 ```swift
   NavTalkManager.shared.characterName = "*******"
   NavTalkManager.shared.characterId = "*******"
@@ -57,16 +57,22 @@ Then click **Add Package**.
     - Send a conversation.connected.warning event with the selected avatarId immediately after the connection success event  
   - Note: When the system role provider is 11Labs, function call and image recognition are not supported.
   - Custom roles support function call and image recognition only when OpenAIRealtime is selected.
-  
 
-4.Save chat history locally (optional)
+4.WebSocket domain(optional)
+```swift
+ NavTalkManager.shared.navtalkBaseURL = "**************"
+```
+  - Defaults to the production environment: wss://transfer.navtalk.ai/wss/v2/realtime-chat.
+  - Self-hosted users can customize their own domain.
+
+5.Save chat history locally (optional)
 ```swift
   NavTalkManager.shared.isOrNotSaveHistoryChatMessages = false
 ```
 
-5.Function Call (Optional)
+6.Function Call (Optional)
 
-  Example: A function that calculates the sum of two numbers.
+- Example: A function that calculates the sum of two numbers.
   
   (1) Add Function Call
   ```swift
@@ -102,7 +108,7 @@ Then click **Add Package**.
     }
   ```
     
-6.Navigate to the chat interface in your UIViewController (required)
+7.Navigate to the chat interface in your UIViewController (required)
 ```swift
   NavTalkManager.shared.showNavTalkChatViewController(vc: self)
 ```
