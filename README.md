@@ -40,6 +40,7 @@ Then click **Add Package**.
 ```
 
 2.Required configuration parameters (required)
+
 2.1.NavTalk License
 ```swift
   NavTalkManager.shared.license = "*******"
@@ -62,6 +63,7 @@ Then click **Add Package**.
 ```
 
 3.Custom configuration parameters (optional)
+
 3.1.Whether to save chat history locally, default is false
 ```swift
   NavTalkManager.shared.isOrNotSaveHistoryChatMessages = false
@@ -74,6 +76,7 @@ Then click **Add Package**.
   - Self-hosted users can customize their own domain.
 
 3.3.URL for fetching avatar information:
+
 (1).API endpoint to get avatar details by AvatarName.
 ```swift
   NavTalkManager.shared.fetchAvatarInfoByName = "https://api.navtalk.ai/api/open/v1/avatar/getByName?name="
@@ -84,6 +87,7 @@ Then click **Add Package**.
 ```
 
 4.Custom UI parameters (optional)
+
 4.1.Background image displayed before the digital human is loaded:
 ```swift
   NavTalkManager.shared.navtalk_chatpage_backgroundImage = UIImage(named: "******")
@@ -91,33 +95,51 @@ Then click **Add Package**.
 
 4.2.Back button related:
 ```swift
+  // Set the size and position of the back button
   NavTalkManager.shared.navtalk_backButton_frame = CGRect(x: 100, y: 100, width: 50, height: 50)
+  // Set the icon of the back button
   NavTalkManager.shared.navtalk_backButton_image = UIImage(named: "******")
 ```
 
 4.3.Microphone button related:
 ```swift
+  // Set the frame (position and size) of the microphone button
   NavTalkManager.shared.navtalk_micphoneButton_frame = CGRect(x: 10, y: 700, width: 120, height:120)
+  // Set the image when the microphone button is ON (active state)
   NavTalkManager.shared.navtalk_micphoneButton_image_on = UIImage(named: "******")
+  // Set the image when the microphone button is OFF (inactive state)
   NavTalkManager.shared.navtalk_micphoneButton_image_off = UIImage(named: "******")
-  NavTalkManager.shared.navtalk_micphoneButton_title = "******"
+  // Set the title text of the microphone button
+  NavTalkManager.shared.navtalk_micphoneButton_title = "test_micphone"
+  // Set the title color of the microphone button
   NavTalkManager.shared.navtalk_micphoneButton_titleColor = UIColor.red
+  // Set the title font size of the microphone button
   NavTalkManager.shared.navtalk_micphoneButton_titleFont = UIFont.systemFont(ofSize: 10)
+  // Whether to show the microphone button
   NavTalkManager.shared.navtalk_micphoneButton_isShow = true
 ```
 
 4.4.Call button related:
 ```swift
+  // Set the frame (position and size) of the NavTalk button
   NavTalkManager.shared.navtalk_navtalkButton_frame = CGRect(x: UIScreen.main.bounds.size.width/2-120/2, y: 700, width: 120, height: 120)
+  // Set the button image for OFF state
   NavTalkManager.shared.navtalk_navtalkButton_image_off = UIImage(named: "******")
+  // Set the button image for CONNECTING state
   NavTalkManager.shared.navtalk_navtalkButton_image_connecting = UIImage(named: "******")
+  // Set the button image for ON state
   NavTalkManager.shared.navtalk_navtalkButton_image_on = UIImage(named: "******")
+  // Set the title text for OFF state (before call starts)
   NavTalkManager.shared.navtalk_navtalkButton_off_title = "test_Call"
+  // Set the title color for OFF state
   NavTalkManager.shared.navtalk_navtalkButton_off_titleColor = UIColor.blue
+  // Set the title font for OFF state
   NavTalkManager.shared.navtalk_navtalkButton_off_titleFont = UIFont.systemFont(ofSize: 10)
+  // CONNECTING state
   NavTalkManager.shared.navtalk_navtalkButton_connecting_title = "test_Connecting…"
   NavTalkManager.shared.navtalk_navtalkButton_connecting_titleColor = UIColor.red
   NavTalkManager.shared.navtalk_navtalkButton_connecting_titleFont = UIFont.systemFont(ofSize: 10)
+  // ON state
   NavTalkManager.shared.navtalk_navtalkButton_on_title = "test_Hang Up"
   NavTalkManager.shared.navtalk_navtalkButton_on_titleColor = UIColor.yellow
   NavTalkManager.shared.navtalk_navtalkButton_on_titleFont = UIFont.systemFont(ofSize: 10)
@@ -125,36 +147,48 @@ Then click **Add Package**.
 
 4.5.Camera button related:
 ```swift
+  // Set the frame (position and size) of the camera button
   NavTalkManager.shared.navtalk_cameraButton_frame = CGRect(x: UIScreen.main.bounds.size.width-120-10, y: 700, width: 120, height: 120)
+  // Set the image for camera button OFF state
   NavTalkManager.shared.navtalk_cameraButton_image_off = UIImage(named: "******")
+  // Set the image for camera button ON state
   NavTalkManager.shared.navtalk_cameraButton_image_on = UIImage(named: "******")
+  // Set the title text of the camera button
   NavTalkManager.shared.navtalk_cameraButton_title = "test_camera"
+  // Set the title color of the camera button
   NavTalkManager.shared.navtalk_cameraButton_titleColor = UIColor.red
+  // Set the title font size of the camera button
   NavTalkManager.shared.navtalk_cameraButton_titleFont = UIFont.systemFont(ofSize: 10)
+  // Whether to show the camera button
   NavTalkManager.shared.navtalk_cameraButton_isShow = true
 ```
 
 4.6.Camera preview related:
 ```swift
+  // Set the frame (position and size) of the camera preview
   NavTalkManager.shared.navtalk_cameraPreview_frame = CGRect(x: UIScreen.main.bounds.size.width-10-120, y: 100, width: 120, height: 180)
+  // Whether to show the camera preview
   NavTalkManager.shared.navtalk_cameraPreview_isShow = true
+  // Set the frame (position and size) of the switch camera button
   NavTalkManager.shared.navtalk_switchCameraButton_frame = CGRect(x: 120/2, y: 30/2, width: 30, height: 30)
+  // Whether to show the switch camera button
   NavTalkManager.shared.navtalk_switchCameraButton_isShow = true
+  // Set the image of the switch camera button
   NavTalkManager.shared.navtalk_switchCameraButton_image = UIImage(named: "******")
 ```
 
 4.7.Message list related:
 ```swift
-  //messageList
+  // Message List Configuration
   NavTalkManager.shared.navtalk_messageList_frame = CGRect(x: 0, y: 300, width: 250, height: 300)
   NavTalkManager.shared.navtalk_messageList_enableGradient = false
   NavTalkManager.shared.navtalk_messageList_isShow = true
-  //Item-AI
+  // AI Message Item Style
   NavTalkManager.shared.navtalk_messageItem_ai_backgroundColor = UIColor.blue
   NavTalkManager.shared.navtalk_messageItem_ai_titleColor = UIColor.black
   NavTalkManager.shared.navtalk_messageItem_ai_titleFont = UIFont.systemFont(ofSize: 17)
   NavTalkManager.shared.navtalk_messageItem_ai_cornerRadius = 12.0
-  //Item-User
+  // User Message Item Style
   NavTalkManager.shared.navtalk_messageItem_user_backgroundColor = UIColor.red
   NavTalkManager.shared.navtalk_messageItem_user_titleColor = UIColor.black
   NavTalkManager.shared.navtalk_messageItem_user_titleFont = UIFont.systemFont(ofSize: 18)
