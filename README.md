@@ -41,7 +41,7 @@ Then click **Add Package**.
 
 2.Required configuration parameters (required)
 
-2.1.NavTalk License
+2.1.NavTalk License (required)
 ```swift
   NavTalkManager.shared.license = "*******"
 ```
@@ -51,8 +51,7 @@ Then click **Add Package**.
   NavTalkManager.shared.characterName = "*******"
   NavTalkManager.shared.characterId = "*******"
 ```
-  - Note: characterName: not unique
-  - Note: characterId: unique
+  - Note: characterName: not unique, characterId: unique
   - Note: You must provide one of the two parameters; if both are provided, characterId will be used.
   - Note: When the system role provider is 11Labs, function call and image recognition are not supported.
   - Custom roles support function call and image recognition only when OpenAIRealtime is selected.
