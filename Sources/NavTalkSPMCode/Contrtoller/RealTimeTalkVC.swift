@@ -4,11 +4,15 @@ import WebRTC
 import SDWebImage
 
 class RealTimeTalkVC: UIViewController, UITableViewDelegate, UITableViewDataSource{
-
+    
     lazy var backgroudImage = {
         let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: kScreen_WIDTH, height: kScreen_HEIGHT))
         imageView.backgroundColor = .clear
-        imageView.image = UIImage(named: "default_background",in: Bundle.module,with: nil)
+        if NavTalkManager.shared.navtalk_chatpage_backgroundImage != nil{
+            imageView.image = NavTalkManager.shared.navtalk_chatpage_backgroundImage
+        }else{
+            imageView.image = UIImage(named: "default_background",in: Bundle.module,with: nil)
+        }
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         return imageView
@@ -16,47 +20,64 @@ class RealTimeTalkVC: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     lazy var backButton = {
         let button = UIButton(type: .custom)
-        button.frame = CGRectMake(20, safeTop()+(44/2-24/2), 24, 24)
-        button.setImage(UIImage(named: "navtalk_back",in: Bundle.module,with: nil), for: .normal)
+        if NavTalkManager.shared.navtalk_backButton_frame != nil{
+            button.frame = NavTalkManager.shared.navtalk_backButton_frame!
+        }else{
+            button.frame = CGRectMake(20, safeTop()+(44/2-24/2), 24, 24)
+        }
+        if NavTalkManager.shared.navtalk_backButton_image != nil{
+            button.setImage(NavTalkManager.shared.navtalk_backButton_image, for: .normal)
+        }else{
+            button.setImage(UIImage(named: "navtalk_back",in: Bundle.module,with: nil), for: .normal)
+        }
         button.addTarget(self, action: #selector(clickBackButton), for: .touchUpInside)
         return button
     }()
-
+    
     lazy var myTableView = {
-        let tableView = UITableView(frame: CGRect(x: 0, y: kScreen_HEIGHT-safeBottom()-20-39-20-450, width: kScreen_WIDTH, height: 450))
+        let tableView = UITableView(frame: CGRect(x: 0, y: 300, width: kScreen_WIDTH-100, height: kScreen_HEIGHT-300-safeBottom()-20-60-30))
+        if NavTalkManager.shared.navtalk_messageList_frame != nil{
+            tableView.frame = NavTalkManager.shared.navtalk_messageList_frame!
+        }
         tableView.backgroundColor = .clear
         tableView.register(UINib(nibName: "ChatTableViewQuestionCell", bundle: Bundle.module), forCellReuseIdentifier: "ChatTableViewQuestionCellID")
         tableView.register(UINib(nibName: "ChatTableViewAnswerCell", bundle: Bundle.module), forCellReuseIdentifier: "ChatTableViewAnswerCellID")
         tableView.dataSource = self
         tableView.delegate = self
         tableView.separatorStyle = .none
-
-        let gradientLayer = CAGradientLayer()
-        gradientLayer.frame = tableView.bounds
-        gradientLayer.colors = [
-            UIColor.black.cgColor,
-            UIColor.black.withAlphaComponent(0).cgColor,
-        ]
-        gradientLayer.startPoint = CGPoint(x: 0.5, y: 1.0)
-        gradientLayer.endPoint  =  CGPoint(x: 0.5, y: 0.1)
-        tableView.layer.mask = gradientLayer
-        
+        //Translucent view
+        // From bottom to top
+        // alpha 1.0 to 0.1
+        if NavTalkManager.shared.navtalk_messageList_enableGradient == true{
+            let gradientLayer = CAGradientLayer()
+            gradientLayer.frame = tableView.bounds
+            gradientLayer.colors = [
+                UIColor.black.cgColor,
+                UIColor.black.withAlphaComponent(0.05).cgColor,
+            ]
+            gradientLayer.startPoint = CGPoint(x: 0.5, y: 1.0)
+            gradientLayer.endPoint  =  CGPoint(x: 0.5, y: 0.0)
+            tableView.layer.mask = gradientLayer
+        }
         return tableView
     }()
+    //microphoneStatus
     lazy var microphoneStatusView = {
         let view = UIView(frame: CGRectMake(kScreen_WIDTH/2/2-80/2, kScreen_HEIGHT-safeBottom()-20-60, 80, 60))
+        if NavTalkManager.shared.navtalk_micphoneButton_frame != nil{
+            view.frame = NavTalkManager.shared.navtalk_micphoneButton_frame!
+        }else{
+            if NavTalkManager.shared.navtalk_cameraButton_isShow == false{
+                view.frame = CGRectMake(kScreen_WIDTH/2-80/2-50, kScreen_HEIGHT-safeBottom()-20-60, 80, 60)
+            }
+        }
         view.backgroundColor = .clear
-        
-        let iconView = UIView(frame: CGRect(x: 80/2-40/2, y: 0, width: 40, height: 40))
-        iconView.backgroundColor = .white
-        iconView.layer.cornerRadius = 20
-        iconView.addSubview(self.microphoneStatusIcon)
-        view.addSubview(iconView)
-        
-        let label = UILabel(frame: CGRect(x: 0, y: 40+5, width: 80, height: 15))
-        label.font = UIFont.systemFont(ofSize: 12)
-        label.textColor = .white
-        label.text = "Microphone"
+        view.addSubview(microphoneStatusIcon)
+        let button_width = NavTalkManager.shared.navtalk_micphoneButton_frame?.width ?? 80
+        let label = UILabel(frame: CGRect(x: 0, y: 40+5, width: button_width, height: 15))
+        label.text = NavTalkManager.shared.navtalk_micphoneButton_title
+        label.textColor = NavTalkManager.shared.navtalk_micphoneButton_titleColor
+        label.font = NavTalkManager.shared.navtalk_micphoneButton_titleFont
         label.textAlignment = .center
         view.addSubview(label)
         
@@ -65,58 +86,73 @@ class RealTimeTalkVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         return view
     }()
     lazy var microphoneStatusIcon = {
-        let imageV = UIImageView(frame: CGRectMake(40/2-25/2, 40/2-25/2, 25, 25))
+        let button_width = NavTalkManager.shared.navtalk_micphoneButton_frame?.width ?? 80
+        let imageV = UIImageView(frame: CGRectMake(button_width/2-38/2, 0, 38, 38))
+        imageV.layer.cornerRadius = 38/2
         imageV.contentMode = .scaleAspectFit
-        imageV.image = UIImage(named: "micphone_opend",in: Bundle.module,with: nil)
+        if NavTalkManager.shared.navtalk_micphoneButton_image_on != nil{
+            imageV.image = NavTalkManager.shared.navtalk_micphoneButton_image_on
+        }else{
+            imageV.image = UIImage(named: "micphone_on",in: Bundle.module,with: nil)
+        }
         return imageV
     }()
-    
+    //callStatus
     lazy var callStatusView = {
         let view = UIView(frame: CGRectMake(kScreen_WIDTH/2/2*2-80/2, kScreen_HEIGHT-safeBottom()-20-60, 80, 60))
+        if NavTalkManager.shared.navtalk_navtalkButton_frame != nil{
+            view.frame = NavTalkManager.shared.navtalk_navtalkButton_frame!
+        }else{
+            view.frame = CGRectMake(kScreen_WIDTH/2/2*2-80/2, kScreen_HEIGHT-safeBottom()-20-60, 80, 60)
+        }
         view.backgroundColor = .clear
-        
-        view.addSubview(self.callFullIconView)
+        view.addSubview(self.callStatusIcon)
         view.addSubview(self.callLabel)
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(clickOpenOrCloesCallStatusButton))
         view.addGestureRecognizer(tap)
         return view
     }()
-    lazy var callFullIconView = {
-        let iconView = UIView(frame: CGRect(x: 80/2-40/2, y: 0, width: 40, height: 40))
-        iconView.backgroundColor = .white
-        iconView.layer.cornerRadius = 20
-        iconView.addSubview(self.callStatusIcon)
-        return iconView
-    }()
     lazy var callStatusIcon = {
-        let imageV = UIImageView(frame: CGRectMake(40/2-25/2, 40/2-25/2, 25, 25))
+        let button_width = NavTalkManager.shared.navtalk_navtalkButton_frame?.width ?? 80
+        let imageV = UIImageView(frame: CGRect(x: button_width/2-38/2, y: 0, width: 38, height: 38))
+        imageV.layer.cornerRadius = 38/2
         imageV.contentMode = .scaleAspectFit
-        imageV.image = UIImage(named: "call_open",in: Bundle.module,with: nil)
+        if NavTalkManager.shared.navtalk_navtalkButton_image_off != nil{
+            imageV.image =  NavTalkManager.shared.navtalk_navtalkButton_image_off
+        }else{
+            imageV.image = UIImage(named: "navtalk_off",in: Bundle.module,with: nil)
+        }
         return imageV
     }()
     lazy var callLabel = {
-        let label = UILabel(frame: CGRect(x: 0, y: 40+5, width: 80, height: 15))
-        label.font = UIFont.systemFont(ofSize: 12)
-        label.textColor = .white
-        label.text = "Call"
+        let button_width = NavTalkManager.shared.navtalk_navtalkButton_frame?.width ?? 80
+        let label = UILabel(frame: CGRect(x: 0, y: 40+5, width: button_width, height: 15))
+        label.text = NavTalkManager.shared.navtalk_navtalkButton_off_title
+        label.textColor = NavTalkManager.shared.navtalk_navtalkButton_off_titleColor
+        label.font = NavTalkManager.shared.navtalk_navtalkButton_off_titleFont
         label.textAlignment = .center
         return label
     }()
+    //cameraStatus
     lazy var cameraStatusView = {
         let view = UIView(frame: CGRectMake(kScreen_WIDTH/2/2*3-80/2, kScreen_HEIGHT-safeBottom()-20-60, 80, 60))
+        if NavTalkManager.shared.navtalk_cameraButton_frame != nil{
+            view.frame = NavTalkManager.shared.navtalk_cameraButton_frame!
+        }else{
+            if NavTalkManager.shared.navtalk_micphoneButton_isShow == false{
+                view.frame = CGRectMake(kScreen_WIDTH/2-80/2+50, kScreen_HEIGHT-safeBottom()-20-60, 80, 60)
+            }
+        }
         view.backgroundColor = .clear
-        
-        let iconView = UIView(frame: CGRect(x: 80/2-40/2, y: 0, width: 40, height: 40))
-        iconView.backgroundColor = .white
-        iconView.layer.cornerRadius = 20
-        iconView.addSubview(self.cameraStatusIcon)
-        view.addSubview(iconView)
-        
-        let label = UILabel(frame: CGRect(x: 0, y: 40+5, width: 80, height: 15))
+        view.addSubview(self.cameraStatusIcon)
+
+        let button_width = NavTalkManager.shared.navtalk_cameraButton_frame?.width ?? 80
+        let label = UILabel(frame: CGRect(x: 0, y: 40+5, width: button_width, height: 15))
         label.font = UIFont.systemFont(ofSize: 12)
-        label.textColor = .white
-        label.text = "Camera"
+        label.text = NavTalkManager.shared.navtalk_cameraButton_title
+        label.textColor = NavTalkManager.shared.navtalk_cameraButton_titleColor
+        label.font = NavTalkManager.shared.navtalk_cameraButton_titleFont
         label.textAlignment = .center
         view.addSubview(label)
         
@@ -125,13 +161,22 @@ class RealTimeTalkVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         return view
     }()
     lazy var cameraStatusIcon = {
-        let imageV = UIImageView(frame: CGRectMake(40/2-25/2, 40/2-25/2, 25, 25))
+        let button_width = NavTalkManager.shared.navtalk_cameraButton_frame?.width ?? 80
+        let imageV = UIImageView(frame: CGRect(x: button_width/2-38/2, y: 0, width: 38, height: 38))
+        imageV.layer.cornerRadius = 38/2
         imageV.contentMode = .scaleAspectFit
-        imageV.image = UIImage(named: "camera_closed",in: Bundle.module,with: nil)
+        if NavTalkManager.shared.navtalk_cameraButton_image_off != nil{
+            imageV.image = NavTalkManager.shared.navtalk_cameraButton_image_off
+        }else{
+            imageV.image = UIImage(named: "camera_off",in: Bundle.module,with: nil)
+        }
         return imageV
     }()
     lazy var showcameraVideoView = {
         let view = UIView(frame: CGRectMake(kScreen_WIDTH-10-90, safeTop()+20, 90, 150))
+        if NavTalkManager.shared.navtalk_cameraPreview_frame != nil{
+            view.frame = NavTalkManager.shared.navtalk_cameraPreview_frame!
+        }
         view.backgroundColor = .black
         view.layer.cornerRadius = 5
         view.layer.masksToBounds = true
@@ -140,8 +185,18 @@ class RealTimeTalkVC: UIViewController, UITableViewDelegate, UITableViewDataSour
     }()
     lazy var switchCaeraButton = {
         let button = UIButton(type: .custom)
-        button.frame = CGRectMake(90/2-20/2, 10, 20, 20)
-        button.setImage(UIImage(named: "switch_camera",in: Bundle.module,with: nil), for: .normal)
+        let showcameraVideoView_width = NavTalkManager.shared.navtalk_cameraPreview_frame?.width ?? 90
+        if NavTalkManager.shared.navtalk_switchCameraButton_frame != nil{
+            button.frame = NavTalkManager.shared.navtalk_switchCameraButton_frame!
+        }else{
+            button.frame = CGRectMake(showcameraVideoView_width/2-20/2, 10, 20, 20)
+        }
+        if NavTalkManager.shared.navtalk_switchCameraButton_image != nil{
+            button.setImage(NavTalkManager.shared.navtalk_switchCameraButton_image, for: .normal)
+        }else{
+            button.setImage(UIImage(named: "switch_camera",in: Bundle.module,with: nil), for: .normal)
+        }
+        
         button.imageView?.contentMode = .scaleAspectFit
         button.addTarget(self, action: #selector(clickSwitchCameraPositionButton), for: .touchUpInside)
         return button
@@ -170,22 +225,9 @@ class RealTimeTalkVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         view.addSubview(backgroudImage)
         
-        view.addSubview(microphoneStatusView)
-        view.addSubview(callStatusView)
-        view.addSubview(cameraStatusView)
-        view.addSubview(showcameraVideoView)
-        
-        view.addSubview(backButton)
-        
-        microphoneStatusView.isHidden = true
-        cameraStatusView.isHidden = true
-        showcameraVideoView.isHidden = true
-        
-        talk_status = .notConnected
-        refreshNavTalkStatusUI()
-        
-        view.addSubview(myTableView)
-        
+        if NavTalkManager.shared.navtalk_messageList_isShow == true{
+            view.addSubview(myTableView)
+        }
         if NavTalkManager.shared.isOrNotSaveHistoryChatMessages == false{
             UserDefaults.standard.removeObject(forKey: "SavedHistoryChatMessagesInLocal")
         }else{
@@ -200,6 +242,27 @@ class RealTimeTalkVC: UIViewController, UITableViewDelegate, UITableViewDataSour
                 }
             }
         }
+        
+        if NavTalkManager.shared.navtalk_micphoneButton_isShow == true{
+            view.addSubview(microphoneStatusView)
+        }
+        view.addSubview(callStatusView)
+        if NavTalkManager.shared.navtalk_cameraButton_isShow == true{
+            view.addSubview(cameraStatusView)
+        }
+        if NavTalkManager.shared.navtalk_cameraPreview_isShow == true{
+            view.addSubview(showcameraVideoView)
+        }
+        view.addSubview(backButton)
+        
+        microphoneStatusView.isHidden = true
+        cameraStatusView.isHidden = true
+        showcameraVideoView.isHidden = true
+        
+        talk_status = .notConnected
+        refreshNavTalkStatusUI()
+        
+        
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeWebSocketStatus), name: NSNotification.Name(rawValue: "WebSocketManager_socket_status_changed"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeWebRTCStatus), name: NSNotification.Name(rawValue: "WebRTCManager_WebRTC_status_changed"), object: nil)
@@ -230,9 +293,9 @@ class RealTimeTalkVC: UIViewController, UITableViewDelegate, UITableViewDataSour
     func fetchAvatarDetailInformation(){
         var urlString = ""
         if (NavTalkManager.shared.characterId.count > 0){
-            urlString = "https://api.navtalk.ai/api/open/v1/avatar/detail?avatarId=\(NavTalkManager.shared.characterId)"
+            urlString = "\(NavTalkManager.shared.fetchAvatarInfoById)\(NavTalkManager.shared.characterId)"
         }else{
-            urlString = "https://api.navtalk.ai/api/open/v1/avatar/getByName?name=\(NavTalkManager.shared.characterName)"
+            urlString = "\(NavTalkManager.shared.fetchAvatarInfoByName)\(NavTalkManager.shared.characterName)"
         }
         guard let url = URL(string: urlString) else { return }
         var request = URLRequest(url: url)
@@ -377,6 +440,7 @@ class RealTimeTalkVC: UIViewController, UITableViewDelegate, UITableViewDataSour
                 messageModel["content"] = transcript
                 allMessageModels.append(messageModel)
                 saveChatMessageToLocal()
+                /*
                 if allMessageModels.count == 2{
                     let firstDict = allMessageModels[0]
                     if let firstDict_type = firstDict["type"] as? String,
@@ -388,6 +452,7 @@ class RealTimeTalkVC: UIViewController, UITableViewDelegate, UITableViewDataSour
                         allMessageModels = new_allMessageModels
                     }
                 }
+                 */
                 self.myTableView.reloadData()
                 if self.allMessageModels.count > 0 {
                     let lastIndex = IndexPath(row: self.allMessageModels.count - 1, section: 0)
@@ -462,9 +527,17 @@ class RealTimeTalkVC: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     @objc func refreshMicrophonStatusUI(){
         if RecordAudioManager.shared.recordSatus == "no"{
-            microphoneStatusIcon.image = UIImage(named: "micphone_closed",in: Bundle.module,with: nil)
+            if NavTalkManager.shared.navtalk_micphoneButton_image_off != nil{
+                microphoneStatusIcon.image = NavTalkManager.shared.navtalk_micphoneButton_image_off
+            }else{
+                microphoneStatusIcon.image = UIImage(named: "micphone_off",in: Bundle.module,with: nil)
+            }
         }else{
-            microphoneStatusIcon.image = UIImage(named: "micphone_opend",in: Bundle.module,with: nil)
+            if NavTalkManager.shared.navtalk_micphoneButton_image_on != nil{
+                microphoneStatusIcon.image = NavTalkManager.shared.navtalk_micphoneButton_image_on
+            }else{
+                microphoneStatusIcon.image = UIImage(named: "micphone_on",in: Bundle.module,with: nil)
+            }
         }
     }
     
@@ -491,10 +564,20 @@ class RealTimeTalkVC: UIViewController, UITableViewDelegate, UITableViewDataSour
             callStatusView.isUserInteractionEnabled = true
             callStatusView.alpha = 1
             
-            callFullIconView.backgroundColor = .white
-            callStatusIcon.image = UIImage(named: "call_open",in: Bundle.module,with: nil)
-            callLabel.text = "Call"
-      
+            if NavTalkManager.shared.navtalk_navtalkButton_image_off != nil{
+                callStatusIcon.image =  NavTalkManager.shared.navtalk_navtalkButton_image_off
+            }else{
+                callStatusIcon.image = UIImage(named: "navtalk_off",in: Bundle.module,with: nil)
+            }
+            callLabel.text = NavTalkManager.shared.navtalk_navtalkButton_off_title
+            callLabel.textColor = NavTalkManager.shared.navtalk_navtalkButton_off_titleColor
+            callLabel.font = NavTalkManager.shared.navtalk_navtalkButton_off_titleFont
+            
+            if NavTalkManager.shared.navtalk_navtalkButton_frame != nil{
+                callStatusView.frame = NavTalkManager.shared.navtalk_navtalkButton_frame!
+            }else{
+                callStatusView.frame = CGRectMake(kScreen_WIDTH/2/2*2-80/2, kScreen_HEIGHT-safeBottom()-20-60, 80, 60)
+            }
             microphoneStatusView.isHidden = true
             cameraStatusView.isHidden = true
             
@@ -503,20 +586,48 @@ class RealTimeTalkVC: UIViewController, UITableViewDelegate, UITableViewDataSour
             callStatusView.isUserInteractionEnabled = false
             callStatusView.alpha = 0.7
             
-            callFullIconView.backgroundColor = .red
-            callStatusIcon.image = UIImage(named: "talk_connecting_icon",in: Bundle.module,with: nil)
-            callLabel.text = "Connecting…"
-      
+            if NavTalkManager.shared.navtalk_navtalkButton_image_connecting != nil{
+                callStatusIcon.image =  NavTalkManager.shared.navtalk_navtalkButton_image_connecting
+            }else{
+                callStatusIcon.image = UIImage(named: "navtalk_connecting",in: Bundle.module,with: nil)
+            }
+            callLabel.text = NavTalkManager.shared.navtalk_navtalkButton_connecting_title
+            callLabel.textColor = NavTalkManager.shared.navtalk_navtalkButton_connecting_titleColor
+            callLabel.font = NavTalkManager.shared.navtalk_navtalkButton_connecting_titleFont
+            if NavTalkManager.shared.navtalk_navtalkButton_frame != nil{
+                callStatusView.frame = NavTalkManager.shared.navtalk_navtalkButton_frame!
+            }else{
+                callStatusView.frame = CGRectMake(kScreen_WIDTH/2/2*2-80/2, kScreen_HEIGHT-safeBottom()-20-60, 80, 60)
+            }
+            
             microphoneStatusView.isHidden = true
             cameraStatusView.isHidden = true
         }else if talk_status == .connected{
             callStatusView.isUserInteractionEnabled = true
             callStatusView.alpha = 1
             
-            callFullIconView.backgroundColor = .red
-            callStatusIcon.image = UIImage(named: "call_close",in: Bundle.module,with: nil)
-            callLabel.text = "Hang Up"
-      
+            if NavTalkManager.shared.navtalk_navtalkButton_image_on != nil{
+                callStatusIcon.image =  NavTalkManager.shared.navtalk_navtalkButton_image_on
+            }else{
+                callStatusIcon.image = UIImage(named: "navtalk_on",in: Bundle.module,with: nil)
+            }
+            callLabel.text = NavTalkManager.shared.navtalk_navtalkButton_on_title
+            callLabel.textColor = NavTalkManager.shared.navtalk_navtalkButton_on_titleColor
+            callLabel.font = NavTalkManager.shared.navtalk_navtalkButton_on_titleFont
+            if NavTalkManager.shared.navtalk_navtalkButton_frame != nil{
+                callStatusView.frame = NavTalkManager.shared.navtalk_navtalkButton_frame!
+            }else{
+                if NavTalkManager.shared.navtalk_micphoneButton_isShow == false && NavTalkManager.shared.navtalk_cameraButton_isShow == false{
+                    callStatusView.frame = CGRectMake(kScreen_WIDTH/2/2*2-80/2, kScreen_HEIGHT-safeBottom()-20-60, 80, 60)
+                }else if NavTalkManager.shared.navtalk_micphoneButton_isShow == true && NavTalkManager.shared.navtalk_cameraButton_isShow == true{
+                    callStatusView.frame = CGRectMake(kScreen_WIDTH/2/2*2-80/2, kScreen_HEIGHT-safeBottom()-20-60, 80, 60)
+                }else if NavTalkManager.shared.navtalk_micphoneButton_isShow == true{
+                    callStatusView.frame = CGRectMake(kScreen_WIDTH/2-80/2+50, kScreen_HEIGHT-safeBottom()-20-60, 80, 60)
+                }else{
+                    callStatusView.frame = CGRectMake(kScreen_WIDTH/2-80/2-50, kScreen_HEIGHT-safeBottom()-20-60, 80, 60)
+                }
+            }
+
             microphoneStatusView.isHidden = false
             cameraStatusView.isHidden = false
         }else{
@@ -557,12 +668,20 @@ class RealTimeTalkVC: UIViewController, UITableViewDelegate, UITableViewDataSour
     @objc func refreshCameraButtonStatus(){
         DispatchQueue.main.async {
             if CameraCaptureManager.shared.current_camera_state == .opened{
-                self.cameraStatusIcon.image = UIImage(named: "camera_opened",in: Bundle.module,with: nil)
+                if NavTalkManager.shared.navtalk_cameraButton_image_on != nil{
+                    self.cameraStatusIcon.image = NavTalkManager.shared.navtalk_cameraButton_image_on
+                }else{
+                    self.cameraStatusIcon.image = UIImage(named: "camera_on",in: Bundle.module,with: nil)
+                }
                 DispatchQueue.main.asyncAfter(deadline: .now()+0.5, execute: {
                     self.showcameraVideoView.isHidden = false
                 })
             }else{
-                self.cameraStatusIcon.image = UIImage(named: "camera_closed",in: Bundle.module,with: nil)
+                if NavTalkManager.shared.navtalk_cameraButton_image_off != nil{
+                    self.cameraStatusIcon.image = NavTalkManager.shared.navtalk_cameraButton_image_off
+                }else{
+                    self.cameraStatusIcon.image = UIImage(named: "camera_off",in: Bundle.module,with: nil)
+                }
                 self.showcameraVideoView.isHidden = true
             }
         }

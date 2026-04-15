@@ -316,8 +316,11 @@ class WebSocketManager: NSObject, WebSocketDelegate, @unchecked Sendable{
             print("\(message_dict)")
             if  let raw_data = message_dict["data"] as? [String: Any],
                 let transcript = raw_data["content"] as? String{
-                let dict = ["text": transcript]
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HaveInputText"), object: dict)
+                let trimmed = transcript.trimmingCharacters(in: .whitespacesAndNewlines)
+                if !trimmed.isEmpty{
+                    let dict = ["text": transcript]
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HaveInputText"), object: dict)
+                }
             }
         }
         //(8).type == realtime.response.audio_transcript.done

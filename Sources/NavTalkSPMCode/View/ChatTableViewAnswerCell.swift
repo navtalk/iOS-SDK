@@ -20,22 +20,25 @@ class ChatTableViewAnswerCell: UITableViewCell {
         
         self.selectionStyle = .none
         
-        messageView.backgroundColor = UIColor(red: 40/255, green: 40/255, blue: 38/255, alpha: 1)
-        messageView.layer.cornerRadius = 8.0
+        messageView.backgroundColor = NavTalkManager.shared.navtalk_messageItem_ai_backgroundColor
+        messageLabel.textColor = NavTalkManager.shared.navtalk_messageItem_ai_titleColor
+        messageLabel.font = NavTalkManager.shared.navtalk_messageItem_ai_titleFont
+        messageView.layer.cornerRadius = NavTalkManager.shared.navtalk_messageItem_ai_cornerRadius
         
         let message = cellDict["content"] as? String ?? ""
-        let textHeight = calculateHeight(forText: message, withFont: messageLabel.font, andWidth: kScreen_WIDTH-10-20-100)
+        let tableView_width = NavTalkManager.shared.navtalk_messageList_frame?.width ?? (kScreen_WIDTH-100)
+        let textHeight = calculateHeight(forText: message, withFont: messageLabel.font, andWidth: tableView_width-30)
         if textHeight < 20.0{
             messageViewHeight.constant = 36.0
             let textWidth = calculateWidth(forText: message, withFont: messageLabel.font, andHeight: textHeight)
-            if textWidth >= kScreen_WIDTH-10-20-100{
-                messageViewWidth.constant = kScreen_WIDTH-10-20-100+20
+            if textWidth >= tableView_width-30{
+                messageViewWidth.constant = tableView_width-30+20
             }else{
                 messageViewWidth.constant = textWidth+20
             }
         }else{
             messageViewHeight.constant = textHeight + 20
-            messageViewWidth.constant =  kScreen_WIDTH-10-20-100+20
+            messageViewWidth.constant =  tableView_width-30+20
         }
         messageLabel.text = message
 

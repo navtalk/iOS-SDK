@@ -31,7 +31,6 @@ class WebRTCManager: NSObject, RTCPeerConnectionDelegate, RTCVideoViewDelegate, 
     func handleOfferMessage(message: [String: Any]){
         //print("=========")
         //print("Offer Message:\(message)")
-        
         guard let current_targetSessionId = targetSessionId else{
             webRTC_status = .NotConnected
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: "WebRTCManager_WebRTC_status_changed"), object: nil)

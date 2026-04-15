@@ -17,11 +17,11 @@ Please apply for them here:
 
 3.Add privacy permission requests in Target –> Info:
 
-  (1).Key: Privacy - Microphone Usage Description  
-      Value: We need access to your microphone to record audio.
+  - Key: Privacy - Microphone Usage Description  
+  - Value: We need access to your microphone to record audio.
 
-  (2).Key: Privacy - Camera Usage Description      
-      Value: The app needs access to the camera to capture images.
+  - Key: Privacy - Camera Usage Description      
+  - Value: The app needs access to the camera to capture images.
 
 ## Installation
 
@@ -39,38 +39,129 @@ Then click **Add Package**.
   import NavTalkSPM
 ```
 
-2.NavTalk License (required)
+2.Required configuration parameters (required)
+2.1.NavTalk License
 ```swift
   NavTalkManager.shared.license = "*******"
 ```
 
-3.NavTalk Avatar Name Or Avatar Id (required)
+2.2.NavTalk Avatar Name Or Avatar Id (required)
 ```swift
   NavTalkManager.shared.characterName = "*******"
   NavTalkManager.shared.characterId = "*******"
 ```
-  - Note: name: The name of the digital human character (query method 1)
-  - Note: avatarId: Direct avatar ID for precise lookup (query method 2, higher priority)
-  - Note: Query Priority: If both avatarId and name are provided, avatarId takes precedence.
-  - Note: Multiple Avatars Warning: If using name query and multiple avatars share the same name, the system will:  
-    - Automatically select the most recently updated avatar  
-    - Send a conversation.connected.warning event with the selected avatarId immediately after the connection success event  
+  - Note: characterName: not unique
+  - Note: characterId: unique
+  - Note: You must provide one of the two parameters; if both are provided, characterId will be used.
   - Note: When the system role provider is 11Labs, function call and image recognition are not supported.
   - Custom roles support function call and image recognition only when OpenAIRealtime is selected.
 
-4.WebSocket domain(optional)
+2.3.Navigate to the chat interface in your UIViewController (required)
 ```swift
- NavTalkManager.shared.navtalkBaseURL = "**************"
+  NavTalkManager.shared.showNavTalkChatViewController(vc: self)
 ```
-  - Defaults to the production environment: wss://transfer.navtalk.ai/wss/v2/realtime-chat.
-  - Self-hosted users can customize their own domain.
 
-5.Save chat history locally (optional)
+3.Custom configuration parameters (optional)
+3.1.Whether to save chat history locally, default is false
 ```swift
   NavTalkManager.shared.isOrNotSaveHistoryChatMessages = false
 ```
 
-6.Function Call (Optional)
+3.2.WebSocket domain, default is production environment
+```swift
+  NavTalkManager.shared.navtalkBaseURL = "wss://transfer.navtalk.ai/wss/v2/realtime-chat"
+```
+  - Self-hosted users can customize their own domain.
+
+3.3.URL for fetching avatar information:
+(1).API endpoint to get avatar details by AvatarName.
+```swift
+  NavTalkManager.shared.fetchAvatarInfoByName = "https://api.navtalk.ai/api/open/v1/avatar/getByName?name="
+```
+(2).API endpoint to get avatar details by AvatarId.
+```swift
+  NavTalkManager.shared.fetchAvatarInfoById = "https://api.navtalk.ai/api/open/v1/avatar/detail?avatarId="
+```
+
+4.Custom UI parameters (optional)
+4.1.Background image displayed before the digital human is loaded:
+```swift
+  NavTalkManager.shared.navtalk_chatpage_backgroundImage = UIImage(named: "******")
+```
+
+4.2.Back button related:
+```swift
+  NavTalkManager.shared.navtalk_backButton_frame = CGRect(x: 100, y: 100, width: 50, height: 50)
+  NavTalkManager.shared.navtalk_backButton_image = UIImage(named: "******")
+```
+
+4.3.Microphone button related:
+```swift
+  NavTalkManager.shared.navtalk_micphoneButton_frame = CGRect(x: 10, y: 700, width: 120, height:120)
+  NavTalkManager.shared.navtalk_micphoneButton_image_on = UIImage(named: "******")
+  NavTalkManager.shared.navtalk_micphoneButton_image_off = UIImage(named: "******")
+  NavTalkManager.shared.navtalk_micphoneButton_title = "******"
+  NavTalkManager.shared.navtalk_micphoneButton_titleColor = UIColor.red
+  NavTalkManager.shared.navtalk_micphoneButton_titleFont = UIFont.systemFont(ofSize: 10)
+  NavTalkManager.shared.navtalk_micphoneButton_isShow = true
+```
+
+4.4.Call button related:
+```swift
+  NavTalkManager.shared.navtalk_navtalkButton_frame = CGRect(x: UIScreen.main.bounds.size.width/2-120/2, y: 700, width: 120, height: 120)
+  NavTalkManager.shared.navtalk_navtalkButton_image_off = UIImage(named: "******")
+  NavTalkManager.shared.navtalk_navtalkButton_image_connecting = UIImage(named: "******")
+  NavTalkManager.shared.navtalk_navtalkButton_image_on = UIImage(named: "******")
+  NavTalkManager.shared.navtalk_navtalkButton_off_title = "test_Call"
+  NavTalkManager.shared.navtalk_navtalkButton_off_titleColor = UIColor.blue
+  NavTalkManager.shared.navtalk_navtalkButton_off_titleFont = UIFont.systemFont(ofSize: 10)
+  NavTalkManager.shared.navtalk_navtalkButton_connecting_title = "test_Connecting…"
+  NavTalkManager.shared.navtalk_navtalkButton_connecting_titleColor = UIColor.red
+  NavTalkManager.shared.navtalk_navtalkButton_connecting_titleFont = UIFont.systemFont(ofSize: 10)
+  NavTalkManager.shared.navtalk_navtalkButton_on_title = "test_Hang Up"
+  NavTalkManager.shared.navtalk_navtalkButton_on_titleColor = UIColor.yellow
+  NavTalkManager.shared.navtalk_navtalkButton_on_titleFont = UIFont.systemFont(ofSize: 10)
+```
+
+4.5.Camera button related:
+```swift
+  NavTalkManager.shared.navtalk_cameraButton_frame = CGRect(x: UIScreen.main.bounds.size.width-120-10, y: 700, width: 120, height: 120)
+  NavTalkManager.shared.navtalk_cameraButton_image_off = UIImage(named: "******")
+  NavTalkManager.shared.navtalk_cameraButton_image_on = UIImage(named: "******")
+  NavTalkManager.shared.navtalk_cameraButton_title = "test_camera"
+  NavTalkManager.shared.navtalk_cameraButton_titleColor = UIColor.red
+  NavTalkManager.shared.navtalk_cameraButton_titleFont = UIFont.systemFont(ofSize: 10)
+  NavTalkManager.shared.navtalk_cameraButton_isShow = true
+```
+
+4.6.Camera preview related:
+```swift
+  NavTalkManager.shared.navtalk_cameraPreview_frame = CGRect(x: UIScreen.main.bounds.size.width-10-120, y: 100, width: 120, height: 180)
+  NavTalkManager.shared.navtalk_cameraPreview_isShow = true
+  NavTalkManager.shared.navtalk_switchCameraButton_frame = CGRect(x: 120/2, y: 30/2, width: 30, height: 30)
+  NavTalkManager.shared.navtalk_switchCameraButton_isShow = true
+  NavTalkManager.shared.navtalk_switchCameraButton_image = UIImage(named: "******")
+```
+
+4.7.Message list related:
+```swift
+  //messageList
+  NavTalkManager.shared.navtalk_messageList_frame = CGRect(x: 0, y: 300, width: 250, height: 300)
+  NavTalkManager.shared.navtalk_messageList_enableGradient = false
+  NavTalkManager.shared.navtalk_messageList_isShow = true
+  //Item-AI
+  NavTalkManager.shared.navtalk_messageItem_ai_backgroundColor = UIColor.blue
+  NavTalkManager.shared.navtalk_messageItem_ai_titleColor = UIColor.black
+  NavTalkManager.shared.navtalk_messageItem_ai_titleFont = UIFont.systemFont(ofSize: 17)
+  NavTalkManager.shared.navtalk_messageItem_ai_cornerRadius = 12.0
+  //Item-User
+  NavTalkManager.shared.navtalk_messageItem_user_backgroundColor = UIColor.red
+  NavTalkManager.shared.navtalk_messageItem_user_titleColor = UIColor.black
+  NavTalkManager.shared.navtalk_messageItem_user_titleFont = UIFont.systemFont(ofSize: 18)
+  NavTalkManager.shared.navtalk_messageItem_user_cornerRadius = 5.0
+```
+
+5.Function Call (Optional)
 
 - Example: A function that calculates the sum of two numbers.
   
@@ -108,11 +199,7 @@ Then click **Add Package**.
     }
   ```
     
-7.Navigate to the chat interface in your UIViewController (required)
-```swift
-  NavTalkManager.shared.showNavTalkChatViewController(vc: self)
-```
-  
+
 ## Specific usage demo
 
 NavTalk iOS Demo Code | Fully open source | Swift code available on GitHub | [GitHub](https://github.com/navtalk/Samples/tree/main/iOS)
@@ -126,7 +213,6 @@ If you want to learn more about AI or chat-related projects, check out:
 ## Author
 
 Frank Fu, fuwei007@gmail.com
-
 
 
 
